@@ -60,7 +60,7 @@ Here is non-scientific single run (yes i should run multiple times and take avrg
         1.765200000 ms
   SoA.zig:
         4.203100000 ms
-``  SoA_MT_SIMD.zig:
+  SoA_MT_SIMD.zig:
         3.190200000 ms
   SoA_SIMD.zig:
         8.626300000 ms
