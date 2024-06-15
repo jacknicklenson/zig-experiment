@@ -46,17 +46,18 @@ pub fn main() !void {
     const randz = rand.float(f32);
     const randmag = rand.float(f32) * 10;
     const slices = particles.slice();
-    const n = particle_sz / 4;
+    const n = particle_sz / 4; // each thread's workload
+    var threads: [4]std.Thread = undefined;
     const t1 = try std.time.Instant.now();
+    // divide SoA's each field into 4 thread to calculate
     {
-        const th1 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x)[0 * n .. 0 * n + n], slices.items(.y)[0 * n .. 0 * n + n], slices.items(.z)[0 * n .. 0 * n + n], .{ randx, randy, randz }, randmag });
-        defer th1.join();
-        const th2 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x)[1 * n .. 1 * n + n], slices.items(.y)[1 * n .. 1 * n + n], slices.items(.z)[1 * n .. 1 * n + n], .{ randx, randy, randz }, randmag });
-        defer th2.join();
-        const th3 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x)[2 * n .. 2 * n + n], slices.items(.y)[2 * n .. 2 * n + n], slices.items(.z)[2 * n .. 2 * n + n], .{ randx, randy, randz }, randmag });
-        defer th3.join();
-        const th4 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x)[3 * n .. 3 * n + n], slices.items(.y)[3 * n .. 3 * n + n], slices.items(.z)[3 * n .. 3 * n + n], .{ randx, randy, randz }, randmag });
-        defer th4.join();
+        for (0..4) |thrd_n| {
+            threads[thrd_n] = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x)[thrd_n * n .. thrd_n * n + n], slices.items(.y)[thrd_n * n .. thrd_n * n + n], slices.items(.z)[thrd_n * n .. thrd_n * n + n], .{ randx, randy, randz }, randmag });
+        }
+        defer threads[0].join();
+        defer threads[1].join();
+        defer threads[2].join();
+        defer threads[3].join();
     }
     const t2 = try std.time.Instant.now();
     std.debug.print("\t{d:.9} ms\n", .{@as(f64, @floatFromInt(t2.since(t1))) / 1_000_000.0});
