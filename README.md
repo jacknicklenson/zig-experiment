@@ -3,7 +3,7 @@ Experimenting with zig to learning purpose. In this repo i have created from 100
 
 You can run benchmark with `benchmark.sh`.
 
-Here is non-scientific single run (yes i should run multiple times and take avrg. of it) `AMD Ryzen 5 5600 3.5 GHz 6 Core / 12 Thread` CPU benchmark ( `benchmark.sh` ):
+Here is non-scientific single run `-OReleaseFast` (yes i should run multiple times and take avrg. of it) `AMD Ryzen 5 5600 3.5 GHz 6 Core / 12 Thread` CPU benchmark ( `benchmark.sh` ):
 ```
 =================================================== PARTICLE SIZE: 100   =======================================================================
   simple.zig:
