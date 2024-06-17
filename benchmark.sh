@@ -7,7 +7,7 @@ for particle_sz in "${iters[@]}"; do
 	echo "=================================================== PARTICLE SIZE: $particle_sz   ======================================================================="
 	for f in "${files[@]}"; do
 		echo "  $f:"
-		zig run "$f" -- "$particle_sz"
+		zig run -OReleaseFast "$f" -- "$particle_sz"
 	done
 	echo ""
 done
