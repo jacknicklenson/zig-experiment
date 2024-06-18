@@ -45,8 +45,8 @@ pub fn main() !void {
     const slices = particles.slice();
     const t1 = try std.time.Instant.now();
     try threadpool.spawn(simulate, .{ slices.items(.x), randx, randmag });
-    threadpool.spawn(simulate, .{ slices.items(.y), randy, randmag });
-    threadpool.spawn(simulate, .{ slices.items(.z), randz, randmag });
+    try threadpool.spawn(simulate, .{ slices.items(.y), randy, randmag });
+    try threadpool.spawn(simulate, .{ slices.items(.z), randz, randmag });
     const t2 = try std.time.Instant.now();
     std.debug.print("\t{d:.9} ms\n", .{@as(f64, @floatFromInt(t2.since(t1))) / 1_000_000.0});
 }
