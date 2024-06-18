@@ -16,6 +16,9 @@ pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
+    var threadpool: std.Thread.Pool = undefined;
+    try threadpool.init(.{ .allocator = allocator });
+    defer threadpool.deinit();
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
     var particles = std.MultiArrayList(Particle){};
@@ -41,14 +44,9 @@ pub fn main() !void {
     const randmag = rand.float(f32) * 10;
     const slices = particles.slice();
     const t1 = try std.time.Instant.now();
-    {
-        const th1 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.x), randx, randmag });
-        defer th1.join();
-        const th2 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.y), randy, randmag });
-        defer th2.join();
-        const th3 = try std.Thread.spawn(.{}, simulate, .{ slices.items(.z), randz, randmag });
-        defer th3.join();
-    }
+    try threadpool.spawn(simulate, .{ slices.items(.x), randx, randmag });
+    threadpool.spawn(simulate, .{ slices.items(.y), randy, randmag });
+    threadpool.spawn(simulate, .{ slices.items(.z), randz, randmag });
     const t2 = try std.time.Instant.now();
     std.debug.print("\t{d:.9} ms\n", .{@as(f64, @floatFromInt(t2.since(t1))) / 1_000_000.0});
 }
