@@ -22,9 +22,6 @@ pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
-    var threadpool: std.Thread.Pool = undefined;
-    try threadpool.init(.{ .allocator = allocator });
-    defer threadpool.deinit();
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
     var particles = std.MultiArrayList(Particle){};
@@ -50,10 +47,16 @@ pub fn main() !void {
     const randmag = rand.float(f32) * 10;
     const slices = particles.slice();
     const n = particle_sz / 4; // each thread's workload
+    var threadpool: std.Thread.Pool = undefined;
+    try threadpool.init(.{ .allocator = allocator });
     const t1 = try std.time.Instant.now();
     // divide SoA's each field into 4 thread to calculate
-    for (0..4) |thrd_n|
-        try threadpool.spawn(simulate, .{ slices.items(.x)[thrd_n * n .. thrd_n * n + n], slices.items(.y)[thrd_n * n .. thrd_n * n + n], slices.items(.z)[thrd_n * n .. thrd_n * n + n], .{ randx, randy, randz }, randmag });
+    {
+        for (0..4) |thrd_n| {
+            try threadpool.spawn(simulate, .{ slices.items(.x)[thrd_n * n .. thrd_n * n + n], slices.items(.y)[thrd_n * n .. thrd_n * n + n], slices.items(.z)[thrd_n * n .. thrd_n * n + n], .{ randx, randy, randz }, randmag });
+        }
+        defer threadpool.deinit();
+    }
     const t2 = try std.time.Instant.now();
     std.debug.print("\t{d:.9} ms\n", .{@as(f64, @floatFromInt(t2.since(t1))) / 1_000_000.0});
 }
