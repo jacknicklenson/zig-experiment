@@ -7,14 +7,10 @@ const Particle = struct {
 };
 
 pub fn simulate(p_x: []f32, p_y: []f32, p_z: []f32, dir: [3]f32, mag: f32) void {
-    for (p_x) |*p_| {
-        p_.* += dir[0] * mag;
-    }
-    for (p_y) |*p_| {
-        p_.* += dir[1] * mag;
-    }
-    for (p_z) |*p_| {
-        p_.* += dir[2] * mag;
+    for (p_x, p_y, p_z) |*px, *py, *pz| {
+        px.* = dir[0] * mag;
+        py.* = dir[1] * mag;
+        pz.* = dir[2] * mag;
     }
 }
 
