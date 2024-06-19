@@ -2,7 +2,12 @@
 Experimenting with zig to learning purpose. In this repo i have created from 100 to 100 Million single point particle and simulate the simple random movement and try to use the zig's `MultiArrayList(SoA)`, `std.Thread`, `SIMD (@Vector thing)` to measure speed differences and also without all this things which is naive implementation (`simple.zig`). If I didnt make any mistake, my observation is in small size particles it is slow relative to simple implementation, for big size particles it make difference but it is still small difference compare it to simple implementation which is why most of time they say dont try to be smarter than the compiler or overthink/overengineer.
 
 You can run benchmark with `benchmark.sh`.
-
+```
+ - CPU: AMD Ryzen 5 5600 3.5 GHz 6 Core / 12 Threads
+ - RAM: 16 GB 2400 MHz DDR 4
+ - Zig version: 0.12
+ - OS: Windows 11
+```
 Here is non-scientific single run `-OReleaseFast` (yes i should run multiple times and take avrg. of it) `AMD Ryzen 5 5600 3.5 GHz 6 Core / 12 Thread` CPU benchmark ( `benchmark.sh` ):
 ```
 =================================================== PARTICLE SIZE: 100   =======================================================================
